@@ -1,9 +1,8 @@
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:meeting_app/model/user.dart';
+import 'package:meeting_app/model/event.dart';
+import 'package:meeting_app/model/event_model.dart';
+import 'package:provider/provider.dart';
 
 class EventAddScreen extends StatefulWidget {
   @override
@@ -12,32 +11,20 @@ class EventAddScreen extends StatefulWidget {
 
 class _EventAddScreenState extends State<EventAddScreen> {
 
-  List<Widget> widgets = [];
-  List<User> users = [];
-
+  late String title;
+  late String description;
+  late String date;
+  late String location;
 
   @override
   void initState() {
     super.initState();
-    getJsonFromFile();
-  }
-
-  void getJsonFromFile() async{
-    String json = await rootBundle.loadString('lib/users.json');
-    var list = (jsonDecode(json) as List<dynamic>);
-    list.forEach((element) {
-      users.add(User.fromJson(element));
-    });
-    for(var i = 0; i < users.length; i++ ){
-      widgets.add(getRow(i));
-    }
-    setState(() {});
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Column(
           children:[
             Stack(
@@ -47,7 +34,7 @@ class _EventAddScreenState extends State<EventAddScreen> {
                     top: 50,
                     left: 30,
                     child: ElevatedButton(
-                      onPressed: (){},
+                      onPressed: onBackButtonPressed,
                       child: const Icon(Icons.arrow_back_rounded),
                       style: ElevatedButton.styleFrom(
                           shape: CircleBorder(),
@@ -59,25 +46,41 @@ class _EventAddScreenState extends State<EventAddScreen> {
                 ]
             ),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+              margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 5),
               child: Center(
                   child: Column(
                     children: [
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 5),
-                        child: const Text(
-                          'Название',
-                          style: TextStyle(
-                              fontSize: 40
+                        child: TextField(
+                          maxLength: 20,
+                          onChanged: (text){
+                            title = text;
+                          },
+                          decoration: const InputDecoration(
+                              hintText: 'Введіть лаконічну тему зустрічі',
+                              hintStyle: TextStyle(
+                                fontSize: 20
+                              )
+                          ),
+                          style: const TextStyle(
+                            fontSize: 40
                           ),
                         ),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 5),
-                        child: const Text(
-                          'Еще куча полезного текста',
-                          style: TextStyle(
-                              fontSize: 20,
+                        child: TextField(
+                          maxLength: 80,
+                          maxLines: 2,
+                          onChanged: (text){
+                            description = text;
+                          },
+                          decoration: const InputDecoration(
+                              hintText: '\nТут місце для інформації',
+                          ),
+                          style: const TextStyle(
+                              fontSize: 18,
                               color: Colors.grey
                           ),
                         ),
@@ -88,46 +91,31 @@ class _EventAddScreenState extends State<EventAddScreen> {
             ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.calendar_today,
-                    size: 20,
-                  ),
-                  Container(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: const Text(
-                        '11 сентября 2002 года',
-                        style: TextStyle(
-                            fontSize: 18
-                        ),
-                      )
-                  )
-                ],
-              ),
+              // ignore: prefer_const_constructors
+              child: TextField(
+                maxLength: 25,
+                onChanged: (text){
+                  date = text;
+                },
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.calendar_today),
+                  hintText: 'Введіть дату зустрічі'
+                ),
+              )
             ),
 
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.place,
-                    size: 20,
+                child: TextField(
+                  maxLength: 25,
+                  onChanged: (text){
+                    location = text;
+                  },
+                  decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.place),
+                      hintText: 'Введіть місце зустрічі'
                   ),
-                  Container(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: const Text(
-                        'Где-то в ебенях',
-                        style: TextStyle(
-                            fontSize: 18
-                        ),
-                      )
-                  )
-                ],
-              ),
+                )
             ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20),
@@ -137,38 +125,26 @@ class _EventAddScreenState extends State<EventAddScreen> {
               ),
             ),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.people,
-                    size: 20,
-                  ),
-                  Container(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: const Text(
-                        'Участники',
-                        style: TextStyle(
-                            fontSize: 18
-                        ),
-                      )
-                  )
-                ],
-              ),
-            ),
-            Container(
                 margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: SizedBox(
-                  height: 200,
-                  child: MediaQuery.removePadding(
-                    context: context,
-                    removeTop: true,
-                    child: ListView(
-                      children: widgets,
-                      physics: BouncingScrollPhysics(),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.add,
+                      size: 20,
+                      color: Colors.lightBlue,
                     ),
-                  ),
+                    Container(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: const Text(
+                          'Пригласить друга',
+                          style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.lightBlue
+                          ),
+                        )
+                    )
+                  ],
                 )
             )
           ],
@@ -178,16 +154,16 @@ class _EventAddScreenState extends State<EventAddScreen> {
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 10),
             child: TextButton(
-              onPressed: (){},
+              onPressed: onCreateButtonPressed,
               style: const ButtonStyle(
                   splashFactory: NoSplash.splashFactory
               ),
               child: const Text(
-                '',
+                'Создать',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 20,
-                    color: Colors.black
+                    color: Colors.yellow
                 ),
               ),
             ),
@@ -196,56 +172,13 @@ class _EventAddScreenState extends State<EventAddScreen> {
     );
   }
 
-  Widget getRow(int position) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children:[
-            Container(
-              child: Row(
-                // ignore: prefer_const_literals_to_create_immutables
-                children: [
-                  Icon(
-                    Icons.camera_alt,
-                    size: 25,
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(left: 10),
-                    child: Text(
-                      users[position].name,
-                      style: TextStyle(
-                          fontSize: 18
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            getStatus(position)
-          ]
-      ),
-    );
+  void onBackButtonPressed() => Navigator.pop(context);
+
+  void onCreateButtonPressed(){
+      Event newEvent = Event(title, description, date, location);
+      var model = context.read<EventModel>();
+      model.addEvent(newEvent);
+      Navigator.pop(context);
   }
 
-  getStatus(int pos){
-    Color textColor = users[pos].status == 0 ? Colors.red : users[pos].status == 1 ? Colors.green : Colors.blue;
-    Color backColor = textColor.withAlpha(50);
-    String text = users[pos].status == 0 ? "Слился" : users[pos].status == 1 ? "Будет" : "Зачинщик";
-
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          color: backColor
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 13, vertical: 4),
-      child: Text(
-        text,
-        style: TextStyle(
-            color: textColor,
-            fontSize: 18
-        ),
-      ),
-    );
-  }
 }
