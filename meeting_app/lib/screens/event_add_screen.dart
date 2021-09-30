@@ -4,6 +4,8 @@ import 'package:meeting_app/model/event.dart';
 import 'package:meeting_app/model/event_model.dart';
 import 'package:provider/provider.dart';
 
+import 'google_map_choose_place_screen.dart';
+
 class EventAddScreen extends StatefulWidget {
   @override
   _EventAddScreenState createState() => _EventAddScreenState();
@@ -13,7 +15,7 @@ class _EventAddScreenState extends State<EventAddScreen> {
 
   late String title;
   late String description;
-  late String date;
+  String date = '1 января 1970, 00:00';
   late String location;
 
   @override
@@ -25,160 +27,230 @@ class _EventAddScreenState extends State<EventAddScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Column(
-          children:[
-            Stack(
-                children:[
-                  Image.asset('lib/images/ski.jpg'),
-                  Positioned(
-                    top: 50,
-                    left: 30,
-                    child: ElevatedButton(
-                      onPressed: onBackButtonPressed,
-                      child: const Icon(Icons.arrow_back_rounded),
-                      style: ElevatedButton.styleFrom(
-                          shape: CircleBorder(),
-                          fixedSize: Size(50, 50),
-                          primary: const Color.fromARGB(150, 0, 0, 0)
+        body: SafeArea(
+          child: Column(
+            children:[
+              Column(
+                children: [
+                  Container(
+                    height: 72,
+                    padding: EdgeInsets.all(10),
+                    child: TextField(
+                      onChanged: (text){
+                        title = text;
+                      },
+                      maxLength: 20,
+                      decoration: InputDecoration(
+                          hintText: 'Название встречи',
+                          hintStyle: const TextStyle(
+                            color: Color.fromRGBO(94, 98, 102, 1),
+                          ),
+                          counterText: '',
+                          border: InputBorder.none,
+                          icon: GestureDetector(
+                            child: const Icon(
+                              Icons.close,
+                              color: Color.fromRGBO(94, 98, 102, 1),
+                              size: 44,
+                            ),
+                            onTap: onBackButtonPressed,
+                          )
                       ),
-                    ),
-                  )
-                ]
-            ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 5),
-              child: Center(
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 5),
-                        child: TextField(
-                          maxLength: 20,
-                          onChanged: (text){
-                            title = text;
-                          },
-                          decoration: const InputDecoration(
-                              hintText: 'Введіть лаконічну тему зустрічі',
-                              hintStyle: TextStyle(
-                                fontSize: 20
-                              )
-                          ),
-                          style: const TextStyle(
-                            fontSize: 40
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 5),
-                        child: TextField(
-                          maxLength: 80,
-                          maxLines: 2,
-                          onChanged: (text){
-                            description = text;
-                          },
-                          decoration: const InputDecoration(
-                              hintText: '\nТут місце для інформації',
-                          ),
-                          style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey
-                          ),
+                    )
+                  ),
+                  Divider(
+                    height: 1,
+                  ),
+                  Container(
+                    height: 72,
+                      padding: EdgeInsets.all(10),
+                      child: TextField(
+                        onChanged: (text){
+                          description = text;
+                        },
+                        maxLines: 1,
+                        maxLength: 66,
+                        decoration: InputDecoration(
+                            hintText: 'Описание',
+                            hintStyle: const TextStyle(
+                              color: Color.fromRGBO(94, 98, 102, 1),
+                            ),
+                            counterText: '',
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.only(left: 12),
+                            icon: GestureDetector(
+                              child: const Icon(
+                                Icons.message_rounded,
+                                color: Color.fromRGBO(94, 98, 102, 1),
+                                size: 24,
+                              ),
+                              onTap: onBackButtonPressed,
+                            )
                         ),
                       )
-                    ],
-                  )
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              // ignore: prefer_const_constructors
-              child: TextField(
-                maxLength: 25,
-                onChanged: (text){
-                  date = text;
-                },
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.calendar_today),
-                  hintText: 'Введіть дату зустрічі'
-                ),
-              )
-            ),
-
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: TextField(
-                  maxLength: 25,
-                  onChanged: (text){
-                    location = text;
-                  },
-                  decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.place),
-                      hintText: 'Введіть місце зустрічі'
                   ),
-                )
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              child: Divider(
-                height: 10,
-                thickness: 0.8,
-              ),
-            ),
-            Container(
-                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.add,
-                      size: 20,
-                      color: Colors.lightBlue,
+                  Divider(
+                    height: 1,
+                  ),
+                  Container(
+                      height: 72,
+                      padding: EdgeInsets.only(left: 10),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.calendar_today,
+                            color: Color.fromRGBO(94, 98, 102, 1),
+                            size: 24,
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(left: 28),
+                            child: GestureDetector(
+                              child: const Text(
+                                'Выбрать дату и время встречи',
+                                style: TextStyle(
+                                    color: Color.fromRGBO(94, 98, 102, 1),
+                                    fontSize: 16
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                  ),
+                  const Divider(
+                    height: 1,
+                  ),
+                  GestureDetector(
+                    onTap: onAddPlaceButtonPressed,
+                    child: Container(
+                        height: 72,
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.message_rounded,
+                              color: Color.fromRGBO(94, 98, 102, 1),
+                              size: 24),
+                            Container(
+                              padding: const EdgeInsets.only(left: 28),
+                              child: const Text(
+                                'Выбрать место встречи',
+                                style: TextStyle(
+                                    color: Color.fromRGBO(94, 98, 102, 1),
+                                    fontSize: 16
+                                ),
+                                  ),
+                            ),
+                          ],
+                        )
                     ),
-                    Container(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: const Text(
-                          'Пригласить друга',
-                          style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.lightBlue
+                  ),
+                  Divider(
+                    height: 1,
+                  ),
+                  Container(
+                    height: 72,
+                    padding: EdgeInsets.only(left: 10),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.photo,
+                          color: Color.fromRGBO(94, 98, 102, 1),
+                          size: 24,
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(left: 28),
+                          child: GestureDetector(
+                            child: const Text(
+                              'Выбрать фото',
+                              style: TextStyle(
+                                  color: Color.fromRGBO(94, 98, 102, 1),
+                                  fontSize: 16
+                              ),
+                            ),
                           ),
                         )
+                      ],
+                    ),
+                  ),
+                  Divider(
+                    height: 1,
+                  ),
+                ],
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 32, horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 40,
+                      width: 40,
+                      child: RawMaterialButton(
+                        shape: const CircleBorder(),
+                        elevation: 0.0,
+                        fillColor: const Color.fromRGBO(255, 32, 75, 230),
+                        child: const Icon(
+                          Icons.add,
+                          size: 32,
+                          color: Color.fromRGBO(255, 23, 68, 1),
+                        ),
+                        onPressed: (){},
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 10),
+                      child: GestureDetector(
+                        child: const Text(
+                          'ПРИГЛАСИТЬ ДРУЗЕЙ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromRGBO(255, 32, 75, 25),
+                          ),
+                        ),
+                      ),
                     )
                   ],
-                )
-            )
-          ],
-        ),
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.red,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            child: TextButton(
-              onPressed: onCreateButtonPressed,
-              style: const ButtonStyle(
-                  splashFactory: NoSplash.splashFactory
-              ),
-              child: const Text(
-                'Создать',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.yellow
                 ),
-              ),
-            ),
+              )
+            ],
           ),
-        )
+        ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
+      floatingActionButton: Container(
+        margin: const EdgeInsets.all(16),
+        width: 320,
+          child: TextButton(
+              onPressed: onCreateButtonPressed,
+              child: const Text(
+                  'Создать встречу',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white
+                ),
+              )
+        ),
+        decoration: const BoxDecoration(
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+            color: Color.fromRGBO(255, 23, 68, 1)
+        ),
+      )
     );
   }
 
   void onBackButtonPressed() => Navigator.pop(context);
 
   void onCreateButtonPressed(){
-      Event newEvent = Event(title, description, date, location);
-      var model = context.read<EventModel>();
-      model.addEvent(newEvent);
-      Navigator.pop(context);
+    Event newEvent = Event(title, description, date, location);
+    var model = context.read<EventModel>();
+    model.addEvent(newEvent);
+    Navigator.pop(context);
   }
 
+
+  void onAddPlaceButtonPressed() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ChoosePlaceMapScreen()));
+  }
 }

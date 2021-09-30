@@ -3,17 +3,25 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:meeting_app/model/event.dart';
 import 'package:meeting_app/model/user.dart';
 
-class EventAddScreen extends StatefulWidget {
+class EventInfoScreen extends StatefulWidget {
+
+  late Event _event;
+
+  EventInfoScreen(this._event);
+
   @override
-  _EventAddScreenState createState() => _EventAddScreenState();
+  _EventInfoScreenState createState() => _EventInfoScreenState(_event);
 }
 
-class _EventAddScreenState extends State<EventAddScreen> {
+class _EventInfoScreenState extends State<EventInfoScreen> {
 
   List<User> users = [];
+  late Event _event;
 
+  _EventInfoScreenState(this._event);
 
   @override
   void initState() {
@@ -42,7 +50,7 @@ class _EventAddScreenState extends State<EventAddScreen> {
                   Image.asset('lib/images/ski.jpg'),
                   Positioned(
                     top: 50,
-                    left: 30,
+                    left: 16,
                     child: ElevatedButton(
                       onPressed: onBackButtonPressed,
                       child: const Icon(Icons.arrow_back_rounded),
@@ -56,24 +64,25 @@ class _EventAddScreenState extends State<EventAddScreen> {
                 ]
             ),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+              margin: const EdgeInsets.only(left: 40, right: 40, top: 20, bottom: 10),
               child: Center(
                   child: Column(
                     children: [
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 5),
-                        child: const Text(
-                          'Название',
-                          style: TextStyle(
-                              fontSize: 40
+                        child: Text(
+                          _event.title,
+                          style: const TextStyle(
+                              fontSize: 30
                           ),
                         ),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 5),
-                        child: const Text(
-                          'Еще куча полезного текста',
-                          style: TextStyle(
+                        child: Text(
+                          _event.description,
+                          maxLines: 3,
+                          style: const TextStyle(
                               fontSize: 20,
                               color: Colors.grey
                           ),
@@ -94,9 +103,9 @@ class _EventAddScreenState extends State<EventAddScreen> {
                   ),
                   Container(
                       padding: const EdgeInsets.only(left: 10),
-                      child: const Text(
-                        '11 сентября 2002 года',
-                        style: TextStyle(
+                      child: Text(
+                        _event.date,
+                        style: const TextStyle(
                             fontSize: 18
                         ),
                       )
@@ -116,9 +125,9 @@ class _EventAddScreenState extends State<EventAddScreen> {
                   ),
                   Container(
                       padding: const EdgeInsets.only(left: 10),
-                      child: const Text(
-                        'Где-то в ебенях',
-                        style: TextStyle(
+                      child:  Text(
+                        _event.location,
+                        style: const TextStyle(
                             fontSize: 18
                         ),
                       )
@@ -154,27 +163,27 @@ class _EventAddScreenState extends State<EventAddScreen> {
                 ],
               ),
             ),
-            Container(
+            Expanded(
+              child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: SizedBox(
-                  height: 200,
-                  child: MediaQuery.removePadding(
-                    context: context,
-                    removeTop: true,
-                    child: ListView.builder(
-                      itemCount: users.length,
-                      itemBuilder: (BuildContext context, int position){
-                        return getRow(position);
+                child: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: ListView.builder(
+                    itemCount: users.length,
+                    itemBuilder: (BuildContext context, int position){
+                      return getRow(position);
                       },
-                      physics: BouncingScrollPhysics(),
-                    ),
+                    physics: BouncingScrollPhysics(),
                   ),
-                )
+                ),
+              ),
+
             )
           ],
         ),
         bottomNavigationBar: BottomAppBar(
-          color: Colors.red,
+          color: Color.fromRGBO(255, 23, 68, 1),
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 10),
             child: TextButton(
@@ -231,7 +240,7 @@ class _EventAddScreenState extends State<EventAddScreen> {
   void onBackButtonPressed() => Navigator.pop(context);
 
   Widget getStatus(int pos){
-    Color textColor = users[pos].status == 0 ? Colors.red : users[pos].status == 1 ? Colors.green : Colors.blue;
+    Color textColor = users[pos].status == 0 ? Color.fromRGBO(255, 23, 68, 1) : users[pos].status == 1 ? Colors.green : Colors.blue;
     Color backColor = textColor.withAlpha(50);
     String text = users[pos].status == 0 ? "Слился" : users[pos].status == 1 ? "Будет" : "Зачинщик";
 

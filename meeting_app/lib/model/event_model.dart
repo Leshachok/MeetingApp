@@ -10,7 +10,6 @@ class EventModel with ChangeNotifier{
 
   void addEvent(Event event){
     _events.add(event);
-    print(_events);
     notifyListeners();
   }
 
